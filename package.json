@@ -10,6 +10,7 @@
     "axios": "^1.13.1",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.10",
     "sqlite3": "^5.1.6",
     "stripe": "^12.18.0"
