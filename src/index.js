@@ -65,22 +65,25 @@ async function isDomainAvailable(domain) {
   const clientIp = process.env.NAMECHEAP_CLIENT_IP || '127.0.0.1';
   if (!apiUser || !apiKey || !clientIp) {
     console.error('Namecheap API credentials missing');
-    return true; // fallback: allow
+    throw new Error('Namecheap API credentials missing');
   }
   try {
     const url = `https://api.namecheap.com/xml.response?ApiUser=${apiUser}&ApiKey=${apiKey}&UserName=${apiUser}&ClientIp=${clientIp}&Command=namecheap.domains.check&DomainList=${domain}`;
     const response = await axios.get(url);
     const xml = response.data;
+    console.log('Namecheap API response:', xml);
     // Parse XML response
     const match = xml.match(/<Domain\s+Name="[^"]+"\s+Available="([^"]+)"/);
     if (match && match[1] === 'true') {
       return true;
-    } else {
+    } else if (match && match[1] === 'false') {
       return false;
+    } else {
+      throw new Error('Could not parse Namecheap response');
     }
   } catch (err) {
     console.error('Namecheap API error:', err);
-    return true; // fallback: allow
+    throw new Error('Domain check failed. Please try again later.');
   }
 }
 
@@ -89,9 +92,13 @@ app.get('/pay', async (req, res) => {
   const domain = req.query.domain || '';
   let errorMsg = '';
   if (domain) {
-    const available = await isDomainAvailable(domain);
-    if (!available) {
-      errorMsg = `<div style="color:#e60000;font-weight:bold;margin-bottom:16px;">Sorry, the domain <b>${domain}</b> is already taken. Please choose another.</div>`;
+    try {
+      const available = await isDomainAvailable(domain);
+      if (!available) {
+        errorMsg = `<div style="color:#e60000;font-weight:bold;margin-bottom:16px;">Sorry, the domain <b>${domain}</b> is already taken. Please choose another.</div>`;
+      }
+    } catch (err) {
+      errorMsg = `<div style="color:#e60000;font-weight:bold;margin-bottom:16px;">Error checking domain: ${err.message}</div>`;
     }
   }
   res.send(`
@@ -362,9 +369,13 @@ app.post('/create-checkout-session', async (req, res) => {
     return res.status(400).send('Email, domain, and amount are required.');
   }
   // Check domain availability before creating Stripe session
-  const available = await isDomainAvailable(domain);
-  if (!available) {
-    return res.status(400).send(`Sorry, the domain ${domain} is already taken. Please choose another.`);
+  try {
+    const available = await isDomainAvailable(domain);
+    if (!available) {
+      return res.status(400).send(`Sorry, the domain ${domain} is already taken. Please choose another.`);
+    }
+  } catch (err) {
+    return res.status(500).send(`Error checking domain: ${err.message}`);
   }
   try {
     const session = await stripe.checkout.sessions.create({
