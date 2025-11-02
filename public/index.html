@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Claim Your Domain | RizzosAI</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body class="red-white-blue">
+    <audio id="welcome-audio" src="https://rizzosai.s3.amazonaws.com/dab5898c-5d77-446f-aec4-2e2b2d1fefdc.mp3" autoplay
+        hidden></audio>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var audio = document.getElementById('welcome-audio');
+            if (audio) {
+                audio.play().catch(function () { });
+            }
+        });
+    </script>
+    <header
+        style="background:linear-gradient(90deg,#e60000 33%,#fff 33%,#fff 66%,#001f5b 66%);color:#001f5b;padding:32px 0 16px 0;text-align:center;">
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;">
+            <div
+                style="background:#fff;padding:16px 32px;border-radius:16px;box-shadow:0 2px 12px rgba(0,31,91,0.08);margin-bottom:0.5em;text-align:center;">
+                <h1 style="font-size:2.5em;margin-bottom:0.2em;color:#e60000;">Welcome to RizzosAI Domains</h1>
+                <p style="font-size:1.2em;color:#001f5b;margin-bottom:0;text-align:center;">You're not just buying a
+                    name,<br>you are buying into your future with wealth.</p>
+            </div>
+        </div>
+    </header>
+    <main
+        style="max-width:700px;margin:40px auto 0 auto;padding:32px 24px;background:#fff;border-radius:12px;box-shadow:0 0 24px rgba(0,31,91,0.08);border:2px solid #e60000;">
+        <h2 style="color:#001f5b;">Claim Your Domain & Get Started</h2>
+        <p style="font-size:1.1em;">Secure your brand and join a system that gives everyone a fair start. Here’s what
+            happens when you join:</p>
+        <ul style="list-style:disc;padding-left:1.5em;margin-bottom:1em;">
+            <li><b>Your first referral is handled by the system</b>—it works to get your first renter for you, so you
+                don’t have to chase anyone. It may take a little time, but you’re never left alone.</li>
+            <li><b>Your second referral goes to the system owner</b> to keep the platform running.</li>
+            <li><b>The system automatically gets you your next 3 referrals</b>.</li>
+            <li>Once you have 3, <b>the system stops placing new referrals for you</b>. All future referrals go directly
+                to you!</li>
+            <li>Every member gets a fair start and a real chance to profit.</li>
+        </ul>
+        <div
+            style="margin-top:32px;padding:20px;background:#f5f7fa;border-radius:10px;border-left:6px solid #001f5b;box-shadow:0 2px 8px rgba(0,31,91,0.06);">
+            <h3 style="color:#001f5b;margin-top:0;">Never Left Alone</h3>
+            <p style="font-size:1.1em;color:#222;">When you join our domain registrar, you are never left alone. You'll
+                be guided every step of the way on your journey to freedom.<br><br>
+                You will have access to your own backoffice, where you'll be welcomed by my best mate Coey, who will
+                help you get started and support you as you grow.</p>
+        </div>
+        <section
+            style="margin:40px auto 0 auto;max-width:700px;text-align:center;padding:32px 24px;background:#f5f7fa;border-radius:12px;box-shadow:0 0 24px rgba(0,31,91,0.08);border:2px solid #e60000;">
+            <h2 style="color:#e60000;">Join & Claim Your Domain</h2>
+            <p style="font-size:1.1em;color:#222;">Ready to get started? Choose your domain name below and join the
+                system. Once you complete payment, your domain will be registered and you'll be placed in the funnel to
+                start earning!</p>
+            <form style="margin:24px 0;">
+                <input type="text" id="domainInput" name="domain" placeholder="Enter your desired domain name"
+                    style="padding:12px;width:70%;max-width:320px;border-radius:6px;border:1px solid #ccc;font-size:1em;"
+                    required />
+                <br><br>
+                <button type="submit"
+                    style="display:inline-block;background:#e60000;color:#fff;font-weight:bold;font-size:1.1em;padding:12px 28px;border-radius:8px;text-decoration:none;box-shadow:0 2px 8px rgba(230,0,0,0.08);transition:background 0.2s;border:none;cursor:pointer;">Proceed
+                    to Payment</button>
+            </form>
+            <div id="errorMsg" style="color:#e60000;font-weight:bold;margin-top:12px;display:none;"></div>
+            <script>
+                document.querySelector('form').addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    var domain = document.getElementById('domainInput').value.trim();
+                    var errorMsg = document.getElementById('errorMsg');
+                    errorMsg.style.display = 'none';
+                    if (!domain) {
+                        errorMsg.textContent = 'Please enter a domain name.';
+                        errorMsg.style.display = 'block';
+                        return;
+                    }
+                    try {
+                        const response = await fetch('/api/domain/check', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ domain })
+                        });
+                        const result = await response.json();
+                        if (result.available) {
+                            window.location.href = '/pay?domain=' + encodeURIComponent(domain);
+                        } else {
+                            errorMsg.textContent = 'Domain is not available. Please choose another.';
+                            errorMsg.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorMsg.textContent = 'Error checking domain. Please try again.';
+                        errorMsg.style.display = 'block';
+                    }
+                });
+            </script>
+            <p style="font-size:0.95em;color:#555;">After payment, you'll be guided to set up your backoffice and start
+                your journey!</p>
+        </section>
+        <section
+            style="margin-top:48px;padding:32px 24px;background:#fff;border-radius:12px;box-shadow:0 0 24px rgba(0,31,91,0.08);border:2px solid #001f5b;">
+            <h2 style="color:#e60000;">Turn Your Domain Into Prime Digital Property That Pays You—Even While You Sleep
+            </h2>
+            <p style="font-size:1.1em;color:#222;">Imagine owning a piece of the internet so valuable, people are
+                willing to pay you $15 a day just to rent it. At RizzosAI Domains, we make this possible for everyone.
+                Your domain name isn’t just a web address—it’s prime digital property, a spot on the web that can earn
+                you money every single day, even while you sleep.</p>
+            <h3 style="color:#001f5b;">What Is a Domain Name, and Why Should You Care?</h3>
+            <p style="font-size:1.1em;color:#222;">A domain name is your unique address online. It’s your digital
+                storefront, your brand, your identity. But with RizzosAI, it’s also a rental property. When you join,
+                you get your own domain name, and you can rent it out for $15 a day. That’s right—your spot on the web
+                becomes a source of passive income.</p>
+            <h3 style="color:#001f5b;">How the RizzosAI System Works</h3>
+            <ul style="list-style:disc;padding-left:1.5em;margin-bottom:1em;">
+                <li><b>Claim your domain name.</b> This is your prime property online.</li>
+                <li><b>The system puts your domain into my funnel</b>—a special process designed to attract renters for
+                    you. It may take a little time, but the system works to fill your first three spots so you don’t
+                    have to chase anyone.</li>
+                <li><b>All you need is 2 active referrals paying you rent every day</b> to cover your costs and start
+                    profiting.</li>
+                <li><b>After your first 3, every new referral goes directly to you.</b> The system stops placing new
+                    referrals for you, and you keep all future earnings.</li>
+                <li><b>Rent out your domain for $15 a day</b> and watch your income grow—even while you sleep.</li>
+            </ul>
+            <p style="font-size:1.1em;color:#222;">This is more than just owning a domain. It’s about turning your
+                digital asset into a money-making machine. You’re not just buying a name—you’re investing in prime real
+                estate that pays you, day after day.</p>
+            <h3 style="color:#001f5b;">Why This Is Perfect for You</h3>
+            <ul style="list-style:disc;padding-left:1.5em;margin-bottom:1em;">
+                <li><b>Passive income:</b> Your domain works for you 24/7.</li>
+                <li><b>Low barrier to entry:</b> No tech skills needed. We guide you every step of the way.</li>
+                <li><b>Support and community:</b> You’ll never be left alone. Our backoffice and my mate Coey are here
+                    to help you succeed.</li>
+                <li><b>Real ownership:</b> Your domain is your asset. Rent it, build on it, or sell it—your choice.</li>
+            </ul>
+            <h3 style="color:#001f5b;">Ready to Start Earning?</h3>
+            <p style="font-size:1.1em;color:#222;">Don’t just dream about wealth—own it. Claim your domain, let the
+                system fill your first three spots, and start collecting rent on your prime digital property. With
+                RizzosAI Domains, you’re building wealth, creating freedom, and enjoying the kind of passive income most
+                people only wish for.<br><br>
+                <b>RizzosAI Domains: Your name, your property, your future—earning for you every day.</b>
+            </p>
+        </section>
+    </main>
+    <footer
+        style="width:100%;background:#f5f7fa;padding:32px 0;text-align:center;margin-top:48px;border-top:2px solid #e60000;">
+        <div style="max-width:700px;margin:0 auto;">
+            <a href="privacy.html"
+                style="color:#001f5b;font-weight:bold;margin:0 18px;text-decoration:underline;">Privacy Policy</a>
+            <a href="terms.html" style="color:#001f5b;font-weight:bold;margin:0 18px;text-decoration:underline;">Terms &
+                Conditions</a>
+        </div>
+    </footer>
+</body>
+
+</html>

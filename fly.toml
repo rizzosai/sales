@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for sales-rizzosai-backend-divine-rain-1784 on 2025-11-02T07:42:29+11:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'sales-rizzosai-backend-divine-rain-1784'
+primary_region = 'syd'
+
+[build]
+
+[env]
+  DEBUG = 'true'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

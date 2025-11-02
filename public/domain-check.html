@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Domain & Pay</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f7fa; }
+    .container { max-width: 400px; margin: 60px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 0 24px rgba(0,31,91,0.08); }
+    label { font-weight: bold; margin-bottom: 8px; display: block; }
+    input { padding: 10px; width: 100%; margin-bottom: 16px; border-radius: 6px; border: 1px solid #ccc; font-size: 1em; }
+    button { background: #e60000; color: #fff; font-weight: bold; font-size: 1.1em; padding: 12px 28px; border-radius: 8px; border: none; cursor: pointer; }
+    .error { color: #e60000; font-weight: bold; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Claim Your Domain</h2>
+    <div id="errorMsg" class="error" style="display:none;"></div>
+    <label for="domainInput">Domain Name:</label>
+    <input type="text" id="domainInput" placeholder="yourdomain.com" required />
+    <button onclick="checkAndRedirect()">Continue</button>
+  </div>
+  <script>
+    async function checkAndRedirect() {
+      const domain = document.getElementById('domainInput').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+      errorMsg.style.display = 'none';
+      if (!domain) {
+        errorMsg.textContent = 'Please enter a domain name.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      try {
+        const response = await fetch('/api/domain/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain })
+        });
+        const result = await response.json();
+        if (result.available) {
+          window.location.href = `/pay?domain=${encodeURIComponent(domain)}`;
+        } else {
+          errorMsg.textContent = 'Domain is not available. Please choose another.';
+          errorMsg.style.display = 'block';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Error checking domain. Please try again.';
+        errorMsg.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
