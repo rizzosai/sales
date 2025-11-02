@@ -1,3 +1,16 @@
+const express = require('express');
+const fetch = require('node-fetch');
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
+const axios = require('axios');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// NOTE: Static middleware moved below API routes for correct routing
+
 // Stripe daily subscription endpoint
 app.post('/create-subscription', async (req, res) => {
   const { email, domain } = req.body || {};
@@ -30,18 +43,6 @@ app.post('/create-subscription', async (req, res) => {
     res.status(500).json({ error: 'Failed to create Stripe subscription.' });
   }
 });
-const express = require('express');
-const fetch = require('node-fetch');
-require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET);
-const axios = require('axios');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// NOTE: Static middleware moved below API routes for correct routing
 
 // Endpoint to show outbound IP for whitelisting
 app.get('/my-ip', async (req, res) => {
