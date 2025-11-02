@@ -60,7 +60,7 @@ app.get('/my-ip', async (req, res) => {
 // Helper: Check domain availability (to be replaced with Namecheap API)
 async function isDomainAvailable(domain) {
   // Namecheap API domain check
-  const apiUser = process.env.NAMECHEAP_API_USER;
+  const apiUser = process.env.NAMECHEAP_USERNAME;
   const apiKey = process.env.NAMECHEAP_API_KEY;
   const clientIp = process.env.NAMECHEAP_CLIENT_IP || '127.0.0.1';
   if (!apiUser || !apiKey || !clientIp) {
