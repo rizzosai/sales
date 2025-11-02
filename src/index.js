@@ -1,4 +1,14 @@
 const express = require('express');
+const fetch = require('node-fetch');
+// Endpoint to show outbound IP for whitelisting
+app.get('/my-ip', async (req, res) => {
+  try {
+    const ip = await fetch('https://api.ipify.org').then(r => r.text());
+    res.send(`Outbound IP: ${ip}`);
+  } catch (err) {
+    res.status(500).send('Could not fetch IP');
+  }
+});
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const axios = require('axios');
