@@ -1,14 +1,5 @@
 const express = require('express');
 const fetch = require('node-fetch');
-// Endpoint to show outbound IP for whitelisting
-app.get('/my-ip', async (req, res) => {
-  try {
-    const ip = await fetch('https://api.ipify.org').then(r => r.text());
-    res.send(`Outbound IP: ${ip}`);
-  } catch (err) {
-    res.status(500).send('Could not fetch IP');
-  }
-});
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const axios = require('axios');
@@ -19,6 +10,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // NOTE: Static middleware moved below API routes for correct routing
+
+// Endpoint to show outbound IP for whitelisting
+app.get('/my-ip', async (req, res) => {
+  try {
+    const ip = await fetch('https://api.ipify.org').then(r => r.text());
+    res.send(`Outbound IP: ${ip}`);
+  } catch (err) {
+    res.status(500).send('Could not fetch IP');
+  }
+});
 
 // Serve payment form with domain pre-filled
 
@@ -75,7 +76,7 @@ app.get('/pay', async (req, res) => {
 app.get('/site/home', (req, res) => {
   res.redirect('https://rizzosai.shopco.com/site/home');
 });
-// SQLite DB setup (use Fly.io volume and DATABASE_URL if available)
+// SQLite DB setup (use persistent disk if available)
 const dbPath = process.env.DATABASE_URL ? process.env.DATABASE_URL.replace('file://', '') : '/data/sqlite.db';
 const db = new sqlite3.Database(dbPath);
 
