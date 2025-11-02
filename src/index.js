@@ -1,3 +1,35 @@
+// Stripe daily subscription endpoint
+app.post('/create-subscription', async (req, res) => {
+  const { email, domain } = req.body || {};
+  if (!email || !domain) {
+    return res.status(400).json({ error: 'Email and domain are required.' });
+  }
+  try {
+    // Create a Stripe Product and Price for $20/day if not already created
+    // For demo, we assume a priceId is already created in Stripe dashboard
+    // You can create a price in Stripe dashboard with interval 'day' and amount 2000 (for $20)
+    const priceId = process.env.STRIPE_DAILY_PRICE_ID || 'price_XXXXXXXXXXXXXX'; // Replace with your actual price ID
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'subscription',
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      customer_email: email,
+      metadata: { domain },
+      success_url: `${req.protocol}://${req.get('host')}/success?session_id={CHECKOUT_SESSION_ID}&domain=${encodeURIComponent(domain)}&email=${encodeURIComponent(email)}`,
+      cancel_url: `${req.protocol}://${req.get('host')}/pay?domain=${encodeURIComponent(domain)}`,
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Stripe Subscription error:', err);
+    res.status(500).json({ error: 'Failed to create Stripe subscription.' });
+  }
+});
 const express = require('express');
 const fetch = require('node-fetch');
 require('dotenv').config();
@@ -24,15 +56,10 @@ app.get('/my-ip', async (req, res) => {
 // Serve payment form with domain pre-filled
 
 
-// Helper: Check domain availability using OpenSRS API
+// Helper: Check domain availability (to be replaced with Namecheap API)
 async function isDomainAvailable(domain) {
-  try {
-    const resp = await opensrs.checkDomainAvailability(domain);
-    return resp && resp.available;
-  } catch (err) {
-    console.error('OpenSRS domain check error:', err);
-    return false; // treat as unavailable on error
-  }
+  // TODO: Implement Namecheap domain check
+  return true;
 }
 
 // Serve payment form with domain pre-filled, posts to /create-checkout-session
@@ -60,8 +87,8 @@ app.get('/pay', async (req, res) => {
             <input type="email" id="email" name="email" required style="padding:10px;width:100%;margin-bottom:16px;border-radius:6px;border:1px solid #ccc;font-size:1em;" />
             <label for="domain" style="display:block;margin-bottom:8px;color:#001f5b;font-weight:bold;">Domain Name:</label>
             <input type="text" id="domain" name="domain" value="${domain}" required style="padding:10px;width:100%;margin-bottom:16px;border-radius:6px;border:1px solid #ccc;font-size:1em;" />
-            <label for="amount" style="display:block;margin-bottom:8px;color:#001f5b;font-weight:bold;">Amount (USD):</label>
-            <input type="number" id="amount" name="amount" value="15" min="1" required style="padding:10px;width:100%;margin-bottom:16px;border-radius:6px;border:1px solid #ccc;font-size:1em;" />
+                 <label for="amount" style="display:block;margin-bottom:8px;color:#001f5b;font-weight:bold;">Amount (USD):</label>
+                 <input type="number" id="amount" name="amount" value="20" min="1" required style="padding:10px;width:100%;margin-bottom:16px;border-radius:6px;border:1px solid #ccc;font-size:1em;" />
             <button type="submit" style="background:#e60000;color:#fff;font-weight:bold;font-size:1.1em;padding:12px 28px;border-radius:8px;border:none;cursor:pointer;">Pay & Claim Domain</button>
           </form>
         </div>
@@ -104,12 +131,14 @@ db.serialize(() => {
 
 // Placeholder: Stripe, ShopCo, Email, Referral modules will be required here
 
-// Remove duplicate stripe declaration
-const opensrs = require('./OpenSRS');
 const emailer = require('./email');
 const referral = require('./referral');
 // Payment and domain registration endpoint
 app.post('/pay', async (req, res) => {
+  // Debug: log content-type and body
+  console.log('PAY endpoint hit');
+  console.log('Content-Type:', req.headers['content-type']);
+  console.log('Request body:', req.body);
 
   // Only require ShopCo webhook key for API/webhook calls (not browser form submissions)
   const SHOPCO_WEBHOOK_KEY = 'pF4gAasoTPWg2jJF5xyWHETbC9CWSho6SpHGdmsG3wA';
@@ -122,39 +151,46 @@ app.post('/pay', async (req, res) => {
     });
   }
 
-  const { email, domain, amount } = req.body || {};
-  if (!email || !domain || !amount) {
+  const { email, domain, amount, paymentMethodId } = req.body || {};
+  if (!email || !domain || !amount || !paymentMethodId) {
     return res.status(400).json({
       id: null,
       email,
       domain,
       amount,
+      paymentMethodId,
       status: 'failed',
-      error: 'Email, domain, and amount are required.'
+      error: 'Email, domain, amount, and paymentMethodId are required.'
     });
   }
 
   try {
-    // Create a PaymentIntent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(Number(amount) * 100), // convert dollars to cents
+    // Log what is being sent to Stripe
+    console.log('Creating PaymentIntent with:', {
+      amount: Math.round(Number(amount)),
       currency: 'usd',
       receipt_email: email,
+      payment_method: paymentMethodId,
+      confirm: true,
       metadata: { domain }
     });
 
-    if (paymentIntent.status === 'requires_payment_method') {
-      return res.status(402).json({ email, domain, amount, status: 'failed', error: 'Payment method required.' });
+    // Create and confirm PaymentIntent with payment method
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(Number(amount)), // amount is already in cents from frontend
+      currency: 'usd',
+      receipt_email: email,
+      payment_method: paymentMethodId,
+      confirm: true,
+      metadata: { domain }
+    });
+
+    if (paymentIntent.status !== 'succeeded') {
+      console.error('Stripe PaymentIntent status:', paymentIntent.status);
+      return res.status(402).json({ email, domain, amount, paymentMethodId, status: 'failed', error: 'Payment not completed.' });
     }
 
-    // Register domain with OpenSRS API
-    let opensrsDomainResult = null;
-    try {
-      opensrsDomainResult = await opensrs.registerDomain(domain, email);
-    } catch (err) {
-      console.error('OpenSRS registration error:', err);
-    }
-
+    // TODO: Register domain with Namecheap API here
     // Payment successful, trigger Zapier webhook (user-provided URL)
     axios.post('https://hooks.zapier.com/hooks/catch/25004565/uinghkc', {
       event: 'payment',
@@ -163,7 +199,6 @@ app.post('/pay', async (req, res) => {
       amount,
       timestamp: new Date().toISOString(),
       payment_intent: paymentIntent.id,
-      opensrs_result: opensrsDomainResult,
       status: paymentIntent.status
     }).catch(err => console.error('Zapier error:', err));
 
@@ -172,16 +207,21 @@ app.post('/pay', async (req, res) => {
       email,
       domain,
       amount,
-      opensrs_result: opensrsDomainResult,
+      paymentMethodId,
       status: paymentIntent.status
     });
   } catch (err) {
+    // Log full Stripe error response
+    if (err && err.raw) {
+      console.error('Stripe error (raw):', err.raw);
+    }
     console.error('Stripe error:', err);
     res.status(500).json({
       id: null,
       email,
       domain,
       amount,
+      paymentMethodId,
       status: 'failed',
       error: err?.message || 'Payment failed.'
     });
@@ -335,7 +375,7 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 // Success page and post-payment logic
-// API endpoint: Check domain availability (OpenSRS)
+// API endpoint: Check domain availability (to be replaced with Namecheap)
 app.post('/api/domain/check', async (req, res) => {
   console.log('POST /api/domain/check hit!', req.body); // Debug log
   const { domain } = req.body;
@@ -343,8 +383,8 @@ app.post('/api/domain/check', async (req, res) => {
     return res.status(400).json({ available: false, error: 'Domain is required.' });
   }
   try {
-    const result = await opensrs.checkDomainAvailability(domain);
-    res.json(result);
+    // TODO: Implement Namecheap domain check
+    res.json({ available: true });
   } catch (err) {
     console.error('Domain check API error:', err);
     res.status(500).json({ available: false, error: 'API error.' });
@@ -361,13 +401,7 @@ app.get('/success', async (req, res) => {
     if (session.payment_status !== 'paid') {
       return res.status(402).send('Payment not completed.');
     }
-    // Register domain with OpenSRS API
-    let opensrsDomainResult = null;
-    try {
-      opensrsDomainResult = await opensrs.registerDomain(domain, email);
-    } catch (err) {
-      console.error('OpenSRS registration error:', err);
-    }
+    // TODO: Register domain with Namecheap API here
     // Trigger Zapier webhook
     axios.post('https://hooks.zapier.com/hooks/catch/25004565/uinghkc', {
       event: 'payment',
@@ -376,7 +410,6 @@ app.get('/success', async (req, res) => {
       amount,
       timestamp: new Date().toISOString(),
       payment_intent: session.payment_intent,
-      opensrs_result: opensrsDomainResult,
       status: session.payment_status
     }).catch(err => console.error('Zapier error:', err));
     res.send(`
@@ -387,8 +420,7 @@ app.get('/success', async (req, res) => {
             <h2 style="color:#e60000;">Payment Successful!</h2>
             <p>Thank you for your purchase. Your domain <b>${domain}</b> is being registered.</p>
             <p>Confirmation sent to <b>${email}</b>.</p>
-            <p>Domain registration status: <b>${opensrsDomainResult && opensrsDomainResult.success ? 'Success' : 'Failed'}</b></p>
-            ${opensrsDomainResult && opensrsDomainResult.error ? `<p style="color:#e60000;">Error: ${opensrsDomainResult.error}</p>` : ''}
+            <p>Domain registration status: <b>Pending</b></p>
           </div>
         </body>
       </html>

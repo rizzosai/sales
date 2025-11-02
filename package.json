@@ -12,6 +12,7 @@
     "express": "^4.18.2",
     "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.10",
+    "opensrs": "^0.1.1",
     "sqlite3": "^5.1.6",
     "stripe": "^12.18.0"
   },
