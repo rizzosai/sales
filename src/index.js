@@ -59,8 +59,29 @@ app.get('/my-ip', async (req, res) => {
 
 // Helper: Check domain availability (to be replaced with Namecheap API)
 async function isDomainAvailable(domain) {
-  // TODO: Implement Namecheap domain check
-  return true;
+  // Namecheap API domain check
+  const apiUser = process.env.NAMECHEAP_API_USER;
+  const apiKey = process.env.NAMECHEAP_API_KEY;
+  const clientIp = process.env.NAMECHEAP_CLIENT_IP || '127.0.0.1';
+  if (!apiUser || !apiKey || !clientIp) {
+    console.error('Namecheap API credentials missing');
+    return true; // fallback: allow
+  }
+  try {
+    const url = `https://api.namecheap.com/xml.response?ApiUser=${apiUser}&ApiKey=${apiKey}&UserName=${apiUser}&ClientIp=${clientIp}&Command=namecheap.domains.check&DomainList=${domain}`;
+    const response = await axios.get(url);
+    const xml = response.data;
+    // Parse XML response
+    const match = xml.match(/<Domain\s+Name="[^"]+"\s+Available="([^"]+)"/);
+    if (match && match[1] === 'true') {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.error('Namecheap API error:', err);
+    return true; // fallback: allow
+  }
 }
 
 // Serve payment form with domain pre-filled, posts to /create-checkout-session
