@@ -73,7 +73,7 @@ async function isDomainAvailable(domain) {
     const xml = response.data;
     console.log('Namecheap API response:', xml);
     // Parse XML response
-    const match = xml.match(/<Domain\s+Name="[^"]+"\s+Available="([^"]+)"/);
+      const match = xml.match(/<DomainCheckResult[^>]*Available="([^"]+)"/);
     if (match && match[1] === 'true') {
       return true;
     } else if (match && match[1] === 'false') {
