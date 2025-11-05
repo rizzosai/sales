@@ -32,6 +32,9 @@ def check_domain_availability():
     try:
         data = request.get_json()
         domain = data.get('domain', '').strip().lower()
+        import os
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host="0.0.0.0", port=port, debug=os.environ.get('DEBUG', 'False').lower() == 'true')
         
         if not domain:
             return jsonify({'error': 'Domain name required'}), 400
@@ -42,10 +45,31 @@ def check_domain_availability():
         # Basic domain validation
         if '.' not in domain or len(domain) < 3:
             return jsonify({'available': False, 'error': 'Invalid domain format'}), 400
-            
+
+        # DEBUG: Show raw Namecheap API response if requested
+        debug = data.get('debug', False)
+        if debug:
+            try:
+                url = 'https://api.sandbox.namecheap.com/xml.response' if NAMECHEAP_SANDBOX else 'https://api.namecheap.com/xml.response'
+                params = {
+                    'ApiUser': NAMECHEAP_API_USER,
+                    'ApiKey': NAMECHEAP_API_KEY,
+                    'UserName': NAMECHEAP_USERNAME,
+                    'Command': 'namecheap.domains.check',
+                    'ClientIp': NAMECHEAP_CLIENT_IP,
+                    'DomainList': domain
+                }
+                response = requests.get(url, params=params, timeout=10)
+                return jsonify({
+                    'domain': domain,
+                    'status_code': response.status_code,
+                    'raw_response': response.text
+                })
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
         # Check with Namecheap API
         is_available = check_namecheap_availability(domain)
-        
         return jsonify({
             'available': is_available,
             'domain': domain,
