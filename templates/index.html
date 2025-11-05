@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Claim Your Domain | RizzosAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .red-white-blue {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        main {
+            max-width: 700px;
+            margin: 40px auto 0 auto;
+            padding: 32px 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 24px rgba(0,31,91,0.08);
+            border: 2px solid #e60000;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1em;
+        }
+
+        h2 {
+            color: #001f5b;
+        }
+
+        h3 {
+            color: #001f5b;
+        }
+
+        p, li {
+            margin-bottom: 0.8em;
+        }
+
+        ul {
+            list-style: disc;
+            padding-left: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        .highlight-box {
+            margin-top: 32px;
+            padding: 20px;
+            background: #f5f7fa;
+            border-radius: 10px;
+            border-left: 6px solid #001f5b;
+            box-shadow: 0 2px 8px rgba(0,31,91,0.06);
+        }
+
+        .highlight-box h3 {
+            color: #001f5b;
+            margin-top: 0;
+        }
+
+        .form-section {
+            margin: 40px auto 0 auto;
+            max-width: 700px;
+            text-align: center;
+            padding: 32px 24px;
+            background: #f5f7fa;
+            border-radius: 12px;
+            box-shadow: 0 0 24px rgba(0,31,91,0.08);
+            border: 2px solid #e60000;
+        }
+
+        .form-section h2 {
+            color: #e60000;
+        }
+
+        form {
+            margin: 24px 0;
+        }
+
+        input[type="text"], input[type="email"] {
+            padding: 12px;
+            width: 70%;
+            max-width: 320px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        button[type="submit"] {
+            display: inline-block;
+            background: #e60000;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(230,0,0,0.08);
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background: #cc0000;
+        }
+
+        .content-section {
+            margin-top: 48px;
+            padding: 32px 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 24px rgba(0,31,91,0.08);
+            border: 2px solid #001f5b;
+        }
+
+        .content-section h2 {
+            color: #e60000;
+        }
+
+        footer {
+            width: 100%;
+            background: #f5f7fa;
+            padding: 32px 0;
+            text-align: center;
+            margin-top: 48px;
+            border-top: 2px solid #e60000;
+        }
+
+        footer a {
+            color: #001f5b;
+            font-weight: bold;
+            margin: 0 18px;
+            text-decoration: underline;
+        }
+
+        #errorMsg {
+            color: #e60000;
+            font-weight: bold;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .integration-status {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .integration-status.warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+    </style>
+</head>
+
+<body class="red-white-blue">
+    <audio id="welcome-audio" src="https://rizzosai.s3.amazonaws.com/dab5898c-5d77-446f-aec4-2e2b2d1fefdc.mp3" autoplay
+        hidden></audio>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var audio = document.getElementById('welcome-audio');
+            if (audio) {
+                audio.play().catch(function () { });
+            }
+        });
+    </script>
+    <header
+        style="background:linear-gradient(90deg,#e60000 33%,#fff 33%,#fff 66%,#001f5b 66%);color:#001f5b;padding:32px 0 16px 0;text-align:center;">
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;">
+            <div
+                style="background:#fff;padding:16px 32px;border-radius:16px;box-shadow:0 2px 12px rgba(0,31,91,0.08);margin-bottom:0.5em;text-align:center;">
+                <h1 style="font-size:2.5em;margin-bottom:0.2em;color:#e60000;">Welcome to RizzosAI Domains</h1>
+                <p style="font-size:1.2em;color:#001f5b;margin-bottom:0;text-align:center;">You're not just buying a
+                    name,<br>you are buying into your future with wealth.</p>
+            </div>
+        </div>
+    </header>
+    <main>
+        <!-- Integration Status -->
+        <div id="integrationStatus" class="integration-status">
+            🔗 <strong>Zapier & Namecheap Integration Active</strong> - Your domain registrations will be automatically processed!
+        </div>
+
+        <h2 style="color:#001f5b;">Claim Your Domain & Get Started</h2>
+        <p style="font-size:1.1em;">Secure your brand and join a system that gives everyone a fair start. Here's what
+            happens when you join:</p>
+        <ul>
+            <li><b>Your first referral is handled by the system</b>—it works to get your first renter for you, so you
+                don't have to chase anyone. It may take a little time, but you're never left alone.</li>
+            <li><b>Your second referral goes to the system owner</b> to keep the platform running.</li>
+            <li><b>The system automatically gets you your next 3 referrals</b>.</li>
+            <li>Once you have 3, <b>the system stops placing new referrals for you</b>. All future referrals go directly
+                to you!</li>
+            <li>Every member gets a fair start and a real chance to profit.</li>
+        </ul>
+        <div class="highlight-box">
+            <h3>Never Left Alone</h3>
+            <p style="font-size:1.1em;color:#222;">When you join our domain registrar, you are never left alone. You'll
+                be guided every step of the way on your journey to freedom.<br><br>
+                You will have access to your own backoffice, where you'll be welcomed by my best mate Coey, who will
+                help you get started and support you as you grow.</p>
+        </div>
+        <section class="form-section">
+            <h2>Join & Claim Your Domain</h2>
+            <p style="font-size:1.1em;color:#222;">Ready to get started? Choose your domain name below and join the
+                system. Once you complete payment, your domain will be registered and you'll be placed in the funnel to
+                start earning!</p>
+            <form id="domainForm">
+                <input type="text" id="firstName" name="first_name" placeholder="Your First Name" required />
+                <br>
+                <input type="email" id="email" name="email" placeholder="Your Best Email" required />
+                <br>
+                <input type="text" id="domainInput" name="domain_preference" placeholder="Enter your desired domain name"
+                    required />
+                <br><br>
+                <button type="submit" id="submitBtn">Check Domain & Proceed to Payment</button>
+            </form>
+            <div id="errorMsg"></div>
+            <div id="domainCheckResult" style="margin-top: 15px; display: none;"></div>
+            <p style="font-size:0.95em;color:#555;">After payment, you'll be guided to set up your backoffice and start
+                your journey!</p>
+        </section>
+        <section class="content-section">
+            <h2>Turn Your Domain Into Prime Digital Property That Pays You—Even While You Sleep</h2>
+            <p style="font-size:1.1em;color:#222;">Imagine owning a piece of the internet so valuable, people are
+                willing to pay you $20 a day just to rent it. At RizzosAI Domains, we make this possible for everyone.
+                Your domain name isn't just a web address—it's prime digital property, a spot on the web that can earn
+                you money every single day, even while you sleep.</p>
+            <h3>What Is a Domain Name, and Why Should You Care?</h3>
+            <p style="font-size:1.1em;color:#222;">A domain name is your unique address online. It's your digital
+                storefront, your brand, your identity. But with RizzosAI, it's also a rental property. When you join,
+                you get your own domain name, and you can rent it out for $20 a day. That's right—your spot on the web
+                becomes a source of passive income.</p>
+            <h3>How the RizzosAI System Works</h3>
+            <ul>
+                <li><b>Claim your domain name.</b> This is your prime property online.</li>
+                <li><b>The system puts your domain into my funnel</b>—a special process designed to attract renters for
+                    you. It may take a little time, but the system works to fill your first three spots so you don't
+                    have to chase anyone.</li>
+                <li><b>All you need is 2 active referrals paying you rent every day</b> to cover your costs and start
+                    profiting.</li>
+                <li><b>After your first 3, every new referral goes directly to you.</b> The system stops placing new
+                    referrals for you, and you keep all future earnings.</li>
+                <li><b>Rent out your domain for $20 a day</b> and watch your income grow—even while you sleep.</li>
+            </ul>
+            <p style="font-size:1.1em;color:#222;">This is more than just owning a domain. It's about turning your
+                digital asset into a money-making machine. You're not just buying a name—you're investing in prime real
+                estate that pays you, day after day.</p>
+            <h3>Why This Is Perfect for You</h3>
+            <ul>
+                <li><b>Passive income:</b> Your domain works for you 24/7.</li>
+                <li><b>Low barrier to entry:</b> No tech skills needed. We guide you every step of the way.</li>
+                <li><b>Support and community:</b> You'll never be left alone. Our backoffice and my mate Coey are here
+                    to help you succeed.</li>
+                <li><b>Real ownership:</b> Your domain is your asset. Rent it, build on it, or sell it—your choice.</li>
+            </ul>
+            <h3>Ready to Start Earning?</h3>
+            <p style="font-size:1.1em;color:#222;">Don't just dream about wealth—own it. Claim your domain, let the
+                system fill your first three spots, and start collecting rent on your prime digital property. With
+                RizzosAI Domains, you're building wealth, creating freedom, and enjoying the kind of passive income most
+                people only wish for.<br><br>
+                <b>RizzosAI Domains: Your name, your property, your future—earning for you every day.</b>
+            </p>
+        </section>
+    </main>
+    <footer>
+        <div style="max-width:700px;margin:0 auto;">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms & Conditions</a>
+        </div>
+    </footer>
+
+    <script>
+        // Check integration status on page load
+        fetch('/api/health')
+            .then(response => response.json())
+            .then(data => {
+                const statusDiv = document.getElementById('integrationStatus');
+                if (data.integrations.zapier && data.integrations.namecheap) {
+                    statusDiv.innerHTML = '🔗 <strong>Zapier & Namecheap Integration Active</strong> - Your domain registrations will be automatically processed!';
+                    statusDiv.className = 'integration-status';
+                } else {
+                    statusDiv.innerHTML = '⚠️ <strong>Integration Setup Needed</strong> - Contact admin for Zapier/Namecheap configuration';
+                    statusDiv.className = 'integration-status warning';
+                }
+            })
+            .catch(() => {
+                // If health check fails, show warning
+                const statusDiv = document.getElementById('integrationStatus');
+                statusDiv.innerHTML = '⚠️ <strong>Integration Status Unknown</strong> - System checking...';
+                statusDiv.className = 'integration-status warning';
+            });
+
+        // Form submission with domain availability check
+        document.getElementById('domainForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const errorMsg = document.getElementById('errorMsg');
+            const resultDiv = document.getElementById('domainCheckResult');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            errorMsg.style.display = 'none';
+            resultDiv.style.display = 'none';
+            
+            // Validate required fields
+            const firstName = formData.get('first_name');
+            const email = formData.get('email');
+            const domain = formData.get('domain_preference');
+            
+            if (!firstName || !email || !domain) {
+                errorMsg.textContent = 'Please fill in all fields.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            // Disable submit button during check
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Checking Domain Availability...';
+            
+            // First check domain availability
+            fetch('/api/domain/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ domain: domain })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.available) {
+                    // Domain is available, proceed with purchase
+                    resultDiv.innerHTML = `<div style="color: #4caf50; font-weight: bold;">✅ ${result.domain} is available!</div>`;
+                    resultDiv.style.display = 'block';
+                    
+                    // Process the purchase
+                    processDomainPurchase(formData);
+                } else {
+                    // Domain not available
+                    resultDiv.innerHTML = `<div style="color: #f44336; font-weight: bold;">❌ ${result.domain} is not available. Please choose another domain.</div>`;
+                    resultDiv.style.display = 'block';
+                    
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Check Domain & Proceed to Payment';
+                }
+            })
+            .catch(error => {
+                console.error('Domain check error:', error);
+                errorMsg.textContent = 'Error checking domain availability. Please try again.';
+                errorMsg.style.display = 'block';
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Check Domain & Proceed to Payment';
+            });
+        });
+
+        function processDomainPurchase(formData) {
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            submitBtn.textContent = 'Processing Purchase...';
+            
+            // Prepare data for webhook with Zapier integration
+            const data = {
+                email: formData.get('email'),
+                first_name: formData.get('first_name'),
+                domain_preference: formData.get('domain_preference'),
+                selected_plan: 'domain_rental',
+                amount: 20,
+                source: 'zapier_integrated_sales'
+            };
+            
+            // Send to domain purchase endpoint (includes Zapier integration)
+            fetch('/domain-purchase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // Success - redirect to success page
+                    window.location.href = '/success';
+                } else {
+                    errorMsg.textContent = result.message || 'There was an error processing your request. Please try again.';
+                    errorMsg.style.display = 'block';
+                    
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Check Domain & Proceed to Payment';
+                }
+            })
+            .catch(error => {
+                console.error('Purchase error:', error);
+                errorMsg.textContent = 'There was an error processing your request. Please try again.';
+                errorMsg.style.display = 'block';
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Check Domain & Proceed to Payment';
+            });
+        }
+    </script>
+</body>
+</html>
