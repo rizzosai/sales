@@ -53,8 +53,21 @@
         <div id="integrationStatus" class="integration-status exciting">
             🚀 <strong>Everything is Ready!</strong> The system will get your first five for you. Once you have five in the system, the zap stops for you—so if you bring them in yourself, good on you! You don't need any help. The zaps are really for people who don't know anyone (but honestly, who doesn't love money?). Claim your spot and let the system work for you!
         </div>
-        <!-- ...rest of your HTML remains unchanged... -->
+        <!-- ...existing content sections... -->
     </main>
+
+    <!-- Domain form section moved to the bottom, just above the footer -->
+    <div class="form-section">
+        <h2>Claim Your Domain</h2>
+        <form id="domainForm">
+            <input type="text" id="domainInput" name="domain" placeholder="Enter your desired domain name" required />
+            <br />
+            <input type="email" id="emailInput" name="email" placeholder="Enter your email address" required />
+            <br />
+            <button type="submit">Claim Now</button>
+        </form>
+        <div id="errorMsg"></div>
+    </div>
     <footer>
         <div style="max-width:700px;margin:0 auto;">
             <a href="/privacy">Privacy Policy</a>
